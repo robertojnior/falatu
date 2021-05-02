@@ -119,17 +119,6 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
   )
 }
 
-// Nextjs SSR (Server Side Rendering)
-// export async function getServerSideProps() {
-//   const response = await fetch('http://localhost:4000/episodes')
-//   const episodes = await response.json()
-
-//   return {
-//     props: { episodes }
-//   }
-// }
-
-
 // Nextjs SSG (Static Site Generation)
 export const getStaticProps: GetStaticProps = async () => {
   const params = { _limit: 12, _sort: 'published_at', _order: 'desc' }
@@ -152,3 +141,13 @@ export const getStaticProps: GetStaticProps = async () => {
     revalidate: 60 * 60 * 8
   }
 }
+
+// Nextjs SSR (Server Side Rendering)
+// export async function getServerSideProps() {
+//   const response = await fetch('http://localhost:4000/episodes')
+//   const episodes = await response.json()
+
+//   return {
+//     props: { episodes }
+//   }
+// }

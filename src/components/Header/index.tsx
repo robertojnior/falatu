@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import format from 'date-fns/format'
 import enUS from 'date-fns/locale/en-US'
 
@@ -8,7 +10,9 @@ export function Header() {
 
   return (
     <header className={styles.headerContainer}>
-      <img src="/logo.svg" alt="Falatu logo" />
+      <Link href="/">
+        <img src="/logo.svg" alt="Application logo" style={{ cursor: 'pointer' }} />
+      </Link>
 
       <p>The best for you to listen, always!</p>
 
