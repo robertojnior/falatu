@@ -13,13 +13,17 @@ import styles from './styles.module.scss'
 export function Player() {
   const {
     isPlaying,
-    nowPlaying,
     episodes,
-    togglePlay,
-    setPlayingState
+    nowPlayingIndex,
+    hasNext,
+    hasPrevious,
+    toggleIsPlaying,
+    setPlayingState,
+    next,
+    previous
   } = useContext(PlayerContext)
 
-  const episode = episodes[nowPlaying]
+  const episode = episodes[nowPlayingIndex]
 
   const audioRef = useRef<HTMLAudioElement>(null)
 
@@ -86,15 +90,15 @@ export function Player() {
             <img src="/shuffle.svg" alt="" />
           </button>
 
-          <button type="button" disabled={!episode}>
+          <button type="button" onClick={previous} disabled={!episode || !hasPrevious}>
             <img src="/play-previous.svg" alt="" />
           </button>
 
-          <button type="button" className={styles.playButton} onClick={togglePlay} disabled={!episode}>
+          <button type="button" className={styles.playButton} onClick={toggleIsPlaying} disabled={!episode}>
             {isPlaying ? <img src="/pause.svg" alt="" /> : <img src="/play.svg" alt="" />}
           </button>
 
-          <button type="button" disabled={!episode}>
+          <button type="button" onClick={next} disabled={!episode || !hasNext}>
             <img src="/play-next.svg" alt="" />
           </button>
 
