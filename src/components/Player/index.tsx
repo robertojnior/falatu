@@ -24,9 +24,7 @@ export function Player() {
   const audioRef = useRef<HTMLAudioElement>(null)
 
   useEffect(() => {
-    if (!audioRef.current) {
-      return
-    }
+    if (!audioRef.current) return
 
     isPlaying ? audioRef.current.play() : audioRef.current.pause()
 
