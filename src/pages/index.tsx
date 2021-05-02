@@ -1,5 +1,6 @@
 import { GetStaticProps } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import { format, parseISO } from 'date-fns'
 import enUS from 'date-fns/locale/en-US'
@@ -9,22 +10,9 @@ import { convertDurationToTimeString } from '../utils/convertDurationToTimeStrin
 
 import styles from './home.module.scss'
 
-type File = {
-  url: string
-  duration: number
-}
+import { Episode } from './episodes/[slug]'
 
-type Episode = {
-  id: string
-  title: string
-  members: string
-  published_at: string
-  thumbnail: string
-  description: string
-  file: File
-}
-
-type SerializedEpisode = Omit<Episode, 'published_at' | 'file'> & {
+type SerializedEpisode = Pick<Episode, 'id' | 'title' | 'members' | 'thumbnail'> & {
   publishedAt: string
   durationTimeString: string
 }
@@ -54,7 +42,9 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                   />
 
                   <div className={styles.episodeDetails}>
-                    <a href="">{episode.title}</a>
+                    <Link href={`/episodes/${episode.id}`}>
+                      <a>{episode.title}</a>
+                    </Link>
 
                     <p>{episode.members}</p>
 
@@ -104,7 +94,9 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                     </td>
 
                     <td>
-                      <a href="">{episode.title}</a>
+                      <Link href={`/episodes/${episode.id}`}>
+                        <a>{episode.title}</a>
+                      </Link>
                     </td>
 
                     <td>{episode.members}</td>
@@ -145,11 +137,11 @@ export const getStaticProps: GetStaticProps = async () => {
   const { data } = await api.get<Episode[]>('/episodes', { params })
 
   const episodes = data.map(episode => {
-    const { id, members, title, thumbnail, published_at, description, file: { duration } } = episode
+    const { id, title, members, thumbnail, published_at, file: { duration } } = episode
     const publishedAt = format(parseISO(published_at), 'd MMM yy', { locale: enUS })
     const durationTimeString = convertDurationToTimeString(duration)
 
-    return { id, members, title, thumbnail, description, publishedAt, durationTimeString }
+    return { id, title, members, thumbnail, publishedAt, durationTimeString }
   })
 
   const latestEpisodes = episodes.slice(0, 2)
