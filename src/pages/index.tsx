@@ -1,3 +1,5 @@
+import { useContext } from 'react'
+
 import { GetStaticProps } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -8,11 +10,15 @@ import enUS from 'date-fns/locale/en-US'
 import { api } from '../config/api'
 import { convertDurationToTimeString } from '../utils/convertDurationToTimeString'
 
-import styles from './home.module.scss'
+import { PlayerContext } from '../contexts/PlayerContext'
 
 import { Episode } from './episodes/[slug]'
 
+import styles from './home.module.scss'
+
 type SerializedEpisode = Pick<Episode, 'id' | 'title' | 'members' | 'thumbnail'> & {
+  url: string
+  duration: number
   publishedAt: string
   durationTimeString: string
 }
@@ -23,6 +29,8 @@ type HomeProps = {
 }
 
 export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
+  const { playEpisode } = useContext(PlayerContext)
+
   return (
     <div className={styles.homepage}>
       <section className={styles.latestEpisodes}>
@@ -53,7 +61,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                     <span>{episode.durationTimeString}</span>
                   </div>
 
-                  <button type="button">
+                  <button type="button" onClick={() => playEpisode(episode)}>
                     <img src="/play-green.svg" alt="Play episode" />
                   </button>
                 </li>
@@ -104,7 +112,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                     <td>{episode.durationTimeString}</td>
 
                     <td>
-                      <button type="button">
+                      <button type="button" onClick={() => playEpisode(episode)}>
                         <img src="/play-green.svg" alt="Play episode" />
                       </button>
                     </td>
@@ -126,11 +134,11 @@ export const getStaticProps: GetStaticProps = async () => {
   const { data } = await api.get<Episode[]>('/episodes', { params })
 
   const episodes = data.map(episode => {
-    const { id, title, members, thumbnail, published_at, file: { duration } } = episode
+    const { id, title, members, thumbnail, published_at, file: { url, duration } } = episode
     const publishedAt = format(parseISO(published_at), 'd MMM yy', { locale: enUS })
     const durationTimeString = convertDurationToTimeString(duration)
 
-    return { id, title, members, thumbnail, publishedAt, durationTimeString }
+    return { id, title, members, thumbnail, url, duration, publishedAt, durationTimeString }
   })
 
   const latestEpisodes = episodes.slice(0, 2)
