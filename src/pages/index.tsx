@@ -1,5 +1,3 @@
-import { useContext } from 'react'
-
 import { GetStaticProps } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,7 +8,7 @@ import enUS from 'date-fns/locale/en-US'
 import { api } from '../config/api'
 import { convertDurationToTimeString } from '../utils/convertDurationToTimeString'
 
-import { PlayerContext } from '../contexts/PlayerContext'
+import { usePlayer } from '../contexts/PlayerContext'
 
 import { Episode } from './episodes/[slug]'
 
@@ -29,7 +27,7 @@ type HomeProps = {
 }
 
 export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
-  const { play } = useContext(PlayerContext)
+  const { play } = usePlayer()
 
   const episodes = [...latestEpisodes, ...allEpisodes]
 

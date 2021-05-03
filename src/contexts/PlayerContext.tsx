@@ -1,4 +1,4 @@
-import { useState, createContext, ReactNode } from 'react'
+import { useState, createContext, ReactNode, useContext } from 'react'
 
 import { Episode } from '../pages/episodes/[slug]'
 
@@ -26,10 +26,15 @@ type ProviderProps = { children: ReactNode }
 
 export const PlayerContext = createContext({} as ContextProps)
 
+export const usePlayer = () => useContext(PlayerContext)
+
 export function PlayerContextProvider({ children }: ProviderProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [episodes, setEpisodes] = useState<SerializedEpisode[]>([])
   const [nowPlayingIndex, setNowPlayingIndex] = useState(0)
+
+  const hasNext = (nowPlayingIndex + 1) < episodes.length
+  const hasPrevious = nowPlayingIndex > 0
 
   function toggleIsPlaying() {
     setIsPlaying(playing => !playing)
@@ -44,9 +49,6 @@ export function PlayerContextProvider({ children }: ProviderProps) {
     setEpisodes(playlist)
     setNowPlayingIndex(episodeIndex)
   }
-
-  const hasNext = (nowPlayingIndex + 1) < episodes.length
-  const hasPrevious = nowPlayingIndex > 0
 
   function next() {
     if (!hasNext) {
