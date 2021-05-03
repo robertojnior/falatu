@@ -1,6 +1,6 @@
 import 'rc-slider/assets/index.css'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import Image from 'next/image'
 
@@ -9,6 +9,7 @@ import Slider from 'rc-slider'
 import { usePlayer } from '../../contexts/PlayerContext'
 
 import styles from './styles.module.scss'
+import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString'
 
 export function Player() {
   const {
@@ -27,9 +28,11 @@ export function Player() {
     previous
   } = usePlayer()
 
-  const episode = episodes[nowPlayingIndex]
-
   const audioRef = useRef<HTMLAudioElement>(null)
+
+  const [progress, setProgress] = useState(0)
+
+  const episode = episodes[nowPlayingIndex]
 
   useEffect(() => {
     if (!audioRef.current) return
@@ -37,6 +40,14 @@ export function Player() {
     isPlaying ? audioRef.current.play() : audioRef.current.pause()
 
   }, [isPlaying])
+
+  function audioProgressListener() {
+    audioRef.current.currentTime = 0
+
+    audioRef.current.addEventListener('timeupdate', () => {
+      setProgress(Math.floor(audioRef.current.currentTime))
+    })
+  }
 
   return (
     <div className={styles.playerContainer}>
@@ -46,6 +57,7 @@ export function Player() {
           src={episode.url}
           onPlay={() => setPlayingState(true)}
           onPause={() => setPlayingState(false)}
+          onLoadedMetadata={audioProgressListener}
           loop={inLoop}
           autoPlay
         />
@@ -73,7 +85,7 @@ export function Player() {
 
       <footer className={!episode ? styles.empty : ''}>
         <div className={styles.progress}>
-          <span>00:00</span>
+          <span>{convertDurationToTimeString(progress)}</span>
 
           <div className={styles.slider}>
             {episode ? (
@@ -87,7 +99,7 @@ export function Player() {
             )}
           </div>
 
-          <span>00:00</span>
+          <span>{convertDurationToTimeString(episode?.duration ?? 0)}</span>
         </div>
 
         <div className={styles.buttons}>
