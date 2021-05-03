@@ -13,12 +13,14 @@ import styles from './styles.module.scss'
 export function Player() {
   const {
     isPlaying,
+    inLoop,
     episodes,
     nowPlayingIndex,
     hasNext,
     hasPrevious,
     setPlayingState,
     togglePlay,
+    toggleLoop,
     next,
     previous
   } = usePlayer()
@@ -42,6 +44,7 @@ export function Player() {
           src={episode.url}
           onPlay={() => setPlayingState(true)}
           onPause={() => setPlayingState(false)}
+          loop={inLoop}
           autoPlay
         />
       )}
@@ -102,7 +105,12 @@ export function Player() {
             <img src="/play-next.svg" alt="" />
           </button>
 
-          <button type="button" disabled={!episode}>
+          <button
+            type="button"
+            className={inLoop ? styles.isActive : ''}
+            onClick={toggleLoop}
+            disabled={!episode}
+          >
             <img src="/repeat.svg" alt="" />
           </button>
         </div>
