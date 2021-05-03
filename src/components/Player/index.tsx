@@ -17,8 +17,8 @@ export function Player() {
     nowPlayingIndex,
     hasNext,
     hasPrevious,
-    toggleIsPlaying,
     setPlayingState,
+    togglePlay,
     next,
     previous
   } = usePlayer()
@@ -94,7 +94,7 @@ export function Player() {
             <img src="/play-previous.svg" alt="" />
           </button>
 
-          <button type="button" className={styles.playButton} onClick={toggleIsPlaying} disabled={!episode}>
+          <button type="button" className={styles.playButton} onClick={togglePlay} disabled={!episode}>
             {isPlaying ? <img src="/pause.svg" alt="" /> : <img src="/play.svg" alt="" />}
           </button>
 

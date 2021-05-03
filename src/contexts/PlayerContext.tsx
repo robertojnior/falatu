@@ -9,13 +9,15 @@ type SerializedEpisode = Pick<Episode, 'title' | 'members' | 'thumbnail'> & {
 
 type ContextProps = {
   isPlaying: boolean
+
   episodes: SerializedEpisode[]
   nowPlayingIndex: number
+
   hasNext: boolean
   hasPrevious: boolean
 
-  toggleIsPlaying(): void
   setPlayingState(playing: boolean): void
+  togglePlay(): void
 
   play(episodes: SerializedEpisode[], nowPlayingIndex: number): void
   next(): void
@@ -30,18 +32,19 @@ export const usePlayer = () => useContext(PlayerContext)
 
 export function PlayerContextProvider({ children }: ProviderProps) {
   const [isPlaying, setIsPlaying] = useState(false)
+
   const [episodes, setEpisodes] = useState<SerializedEpisode[]>([])
   const [nowPlayingIndex, setNowPlayingIndex] = useState(0)
 
   const hasNext = (nowPlayingIndex + 1) < episodes.length
   const hasPrevious = nowPlayingIndex > 0
 
-  function toggleIsPlaying() {
-    setIsPlaying(playing => !playing)
-  }
-
   function setPlayingState(playing: boolean) {
     setIsPlaying(playing)
+  }
+
+  function togglePlay() {
+    setIsPlaying(playing => !playing)
   }
 
   function play(playlist: SerializedEpisode[], episodeIndex: number) {
@@ -71,13 +74,15 @@ export function PlayerContextProvider({ children }: ProviderProps) {
     <PlayerContext.Provider
       value={{
         isPlaying,
+
         episodes,
         nowPlayingIndex,
+
         hasNext,
         hasPrevious,
 
-        toggleIsPlaying,
         setPlayingState,
+        togglePlay,
 
         play,
         next,
