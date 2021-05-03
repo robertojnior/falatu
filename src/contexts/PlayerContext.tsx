@@ -10,6 +10,7 @@ type SerializedEpisode = Pick<Episode, 'title' | 'members' | 'thumbnail'> & {
 type ContextProps = {
   isPlaying: boolean
   inLoop: boolean
+  isShuffling: boolean
 
   episodes: SerializedEpisode[]
   nowPlayingIndex: number
@@ -20,6 +21,7 @@ type ContextProps = {
   setPlayingState(playing: boolean): void
   togglePlay(): void
   toggleLoop(): void
+  toggleShuffle(): void
 
   play(episodes: SerializedEpisode[], nowPlayingIndex: number): void
   next(): void
@@ -35,6 +37,7 @@ export const usePlayer = () => useContext(PlayerContext)
 export function PlayerContextProvider({ children }: ProviderProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [inLoop, setInLoop] = useState(false)
+  const [isShuffling, setIsShuffling] = useState(false)
 
   const [episodes, setEpisodes] = useState<SerializedEpisode[]>([])
   const [nowPlayingIndex, setNowPlayingIndex] = useState(0)
@@ -54,6 +57,10 @@ export function PlayerContextProvider({ children }: ProviderProps) {
     setInLoop(looping => !looping)
   }
 
+  function toggleShuffle() {
+    setIsShuffling(shuffling => !shuffling)
+  }
+
   function play(playlist: SerializedEpisode[], episodeIndex: number) {
     setIsPlaying(true)
     setEpisodes(playlist)
@@ -61,27 +68,41 @@ export function PlayerContextProvider({ children }: ProviderProps) {
   }
 
   function next() {
-    if (!hasNext) {
+    if (isShuffling) {
+      shuffle()
+
       return
     }
+
+    if (!hasNext) return
 
     setNowPlayingIndex(nowPlayingIndex + 1)
   }
 
   function previous() {
-    if (!hasPrevious) {
+    if (isShuffling) {
+      shuffle()
+
       return
     }
+
+    if (!hasPrevious) return
 
     setNowPlayingIndex(nowPlayingIndex - 1)
   }
 
+  function shuffle() {
+    const randomNowPlayingIndex = Math.floor(Math.random() * episodes.length)
+
+    setNowPlayingIndex(randomNowPlayingIndex)
+  }
 
   return (
     <PlayerContext.Provider
       value={{
         isPlaying,
         inLoop,
+        isShuffling,
 
         episodes,
         nowPlayingIndex,
@@ -92,6 +113,7 @@ export function PlayerContextProvider({ children }: ProviderProps) {
         setPlayingState,
         togglePlay,
         toggleLoop,
+        toggleShuffle,
 
         play,
         next,
