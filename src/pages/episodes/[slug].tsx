@@ -9,6 +9,7 @@ import { api } from '../../config/api'
 import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString'
 
 import styles from './episode.module.scss'
+import { usePlayer } from '../../contexts/PlayerContext'
 
 type File = {
   url: string
@@ -27,6 +28,8 @@ export type Episode = {
 }
 
 type SerializedEpisode = Omit<Episode, 'published_at' | 'file'> & {
+  url: string
+  duration: number
   publishedAt: string
   durationTimeString: string
 }
@@ -34,6 +37,8 @@ type SerializedEpisode = Omit<Episode, 'published_at' | 'file'> & {
 type EpisodeProps = { episode: SerializedEpisode }
 
 export default function Episode({ episode }: EpisodeProps) {
+  const { play } = usePlayer()
+
   return (
     <div className={styles.episode}>
       <div className={styles.thumbnailContainer}>
@@ -51,7 +56,7 @@ export default function Episode({ episode }: EpisodeProps) {
           objectFit="cover"
         />
 
-        <button type="button">
+        <button type="button" onClick={() => play([episode], 0)}>
           <img src="/play.svg" alt="Play episode" />
         </button>
       </div>
@@ -86,11 +91,11 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const { data } = await api.get<Episode>(`/episodes/${slug}`)
 
-  const { id, title, members, thumbnail, description, published_at, file: { duration } } = data
+  const { id, title, members, thumbnail, description, published_at, file: { url, duration } } = data
   const publishedAt = format(parseISO(published_at), 'd MMM yy', { locale: enUS })
   const durationTimeString = convertDurationToTimeString(duration)
 
-  const episode = { id, title, members, thumbnail, description, publishedAt, durationTimeString }
+  const episode = { id, title, members, thumbnail, description, url, duration, publishedAt, durationTimeString }
 
   return {
     props: { episode },
