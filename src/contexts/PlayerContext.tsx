@@ -42,8 +42,8 @@ export function PlayerContextProvider({ children }: ProviderProps) {
   const [episodes, setEpisodes] = useState<SerializedEpisode[]>([])
   const [nowPlayingIndex, setNowPlayingIndex] = useState(0)
 
-  const hasNext = (nowPlayingIndex + 1) < episodes.length
-  const hasPrevious = nowPlayingIndex > 0
+  const hasNext = isShuffling || ((nowPlayingIndex + 1) < episodes.length)
+  const hasPrevious = isShuffling || nowPlayingIndex > 0
 
   function setPlayingState(playing: boolean) {
     setIsPlaying(playing)
@@ -55,10 +55,12 @@ export function PlayerContextProvider({ children }: ProviderProps) {
 
   function toggleLoop() {
     setInLoop(looping => !looping)
+    setIsShuffling(false)
   }
 
   function toggleShuffle() {
     setIsShuffling(shuffling => !shuffling)
+    setInLoop(false)
   }
 
   function play(playlist: SerializedEpisode[], episodeIndex: number) {

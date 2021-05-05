@@ -49,6 +49,12 @@ export function Player() {
     })
   }
 
+  function sliderChangeListener(currentTime: number) {
+    audioRef.current.currentTime = currentTime
+
+    setProgress(currentTime)
+  }
+
   return (
     <div className={styles.playerContainer}>
       {episode && (
@@ -58,6 +64,7 @@ export function Player() {
           onPlay={() => setPlayingState(true)}
           onPause={() => setPlayingState(false)}
           onLoadedMetadata={audioProgressListener}
+          onEnded={next}
           loop={inLoop}
           autoPlay
         />
@@ -90,6 +97,9 @@ export function Player() {
           <div className={styles.slider}>
             {episode ? (
               <Slider
+                max={episode.duration}
+                value={progress}
+                onChange={sliderChangeListener}
                 trackStyle={{ backgroundColor: '#04d361' }}
                 railStyle={{ backgroundColor: '#9f75ff' }}
                 handleStyle={{ borderColor: '#04d361', borderWidth: 4 }}

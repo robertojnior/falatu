@@ -1,4 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
+import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -8,8 +9,9 @@ import enUS from 'date-fns/locale/en-US'
 import { api } from '../../config/api'
 import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString'
 
-import styles from './episode.module.scss'
 import { usePlayer } from '../../contexts/PlayerContext'
+
+import styles from './episode.module.scss'
 
 type File = {
   url: string
@@ -41,6 +43,10 @@ export default function Episode({ episode }: EpisodeProps) {
 
   return (
     <div className={styles.episode}>
+      <Head>
+        <title>{episode.title}</title>
+      </Head>
+
       <div className={styles.thumbnailContainer}>
         <Link href="/">
           <button type="button">
